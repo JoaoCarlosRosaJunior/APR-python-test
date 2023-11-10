@@ -1,0 +1,31 @@
+name: OpenAI API Call
+on:
+  push:
+    branches: [ main ]
+jobs:
+  openai_call:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Get committed code
+      run: |
+        git diff-tree --no-commit-id --name-only -r $(git rev-parse HEAD) > committed_files.txt
+
+    - name: Send code to OpenAI API
+      run: |
+        COMMITTED_CODE=""
+        while read file; do
+          COMMITTED_CODE+=$(cat $file)
+        done < committed_files.txt
+
+        RESPONSE=$(curl -X POST https://api.openai.com/v1/engines/davinci-codex/completions \
+        -H 'Content-Type: application/json' \
+        -H 'Authorization: Bearer ${{ secrets.YOUR_OPENAI_API_KEY }}' \
+        -d '{"prompt": "'"$COMMITTED_CODE"'", "max_tokens": 60}')
+
+        echo $RESPONSE > response.txt
+
+    - name: Print OpenAI API response
+      run: cat response.txt
