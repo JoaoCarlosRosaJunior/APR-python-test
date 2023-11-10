@@ -1,7 +1,7 @@
 name: OpenAI API Call
 on:
   push:
-    branches: [ main ]
+    branches: [ main, master ]
 jobs:
   openai_call:
     runs-on: ubuntu-latest
