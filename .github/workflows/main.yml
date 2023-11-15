@@ -11,33 +11,35 @@ jobs:
 
     - name: Send code to OpenAI API
       run: |
+        PREVIOUS_COMMIT=$(git rev-parse HEAD^1)
+
         COMMITTED_CODE=""
         while read -r file; do
           # Check if the file is in the src directory
           if [[ $file == src/* ]]; then
-            COMMITTED_CODE+=$(git show HEAD:"$file" | tr '\n' ' ')
+            COMMITTED_CODE+=$(git show $PREVIOUS_COMMIT:"$file" | tr '\n' ' ')
           fi
-        done < <(git diff --name-only HEAD^ HEAD)
+        done < <(git diff --name-only $PREVIOUS_COMMIT HEAD)
         
         echo "Committed Code:"
         echo "$COMMITTED_CODE"
 
-        RESPONSE=$(curl --location 'https://api.openai.com/v1/chat/completions' \
-        --header 'Content-Type: application/json' \
-        --header 'Authorization: Bearer ${{ secrets.OPENAI_API_KEY}}' \
-        --data '{
-            "model": "gpt-3.5-turbo",
-            "messages": [
-              {
-                "role": "system",
-                "content": "The user is going to send a piece of code, if the code it'\''s bugged can you fix and return in this format: Bugs were found, here is the solution:\n {fixed code}? If it'\''s not bugged can you just send: No bugs were founded"
-              },
-              {
-                "role": "user",
-                "content": "'"${COMMITTED_CODE}"'"
-              }
-            ]
-        }')
+        # RESPONSE=$(curl --location 'https://api.openai.com/v1/chat/completions' \
+        # --header 'Content-Type: application/json' \
+        # --header 'Authorization: Bearer ${{ secrets.OPENAI_API_KEY}}' \
+        # --data '{
+        #     "model": "gpt-3.5-turbo",
+        #     "messages": [
+        #       {
+        #         "role": "system",
+        #         "content": "The user is going to send a piece of code, if the code it'\''s bugged can you fix and return in this format: Bugs were found, here is the solution:\n {fixed code}? If it'\''s not bugged can you just send: No bugs were founded"
+        #       },
+        #       {
+        #         "role": "user",
+        #         "content": "'"${COMMITTED_CODE}"'"
+        #       }
+        #     ]
+        # }')
 
         echo $RESPONSE > response.txt
 
