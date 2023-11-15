@@ -20,6 +20,9 @@ jobs:
           COMMITTED_CODE+=$(cat $file | tr '\n' ' ')
         done < committed_files.txt
 
+        echo "Committed Code:"
+        echo "$COMMITTED_CODE"
+
         RESPONSE=$(curl --location 'https://api.openai.com/v1/chat/completions' \
         --header 'Content-Type: application/json' \
         --header 'Authorization: Bearer ${{ secrets.OPENAI_API_KEY}}' \
