@@ -32,7 +32,7 @@ jobs:
               },
               {
                 "role": "user",
-                "content": "'"$COMMITTED_CODE"'"
+                "content": "def sum(a; b):\n    return a + b"
               }
             ]
         }')
