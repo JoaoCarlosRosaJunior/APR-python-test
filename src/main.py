@@ -1,4 +1,7 @@
 #Initial test code
 
-def subtract(a; b):
-    return a - b
+print(hello world)
+
+deff functio(a, b) {
+    return a + b
+}
