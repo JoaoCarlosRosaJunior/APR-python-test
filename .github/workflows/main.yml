@@ -17,13 +17,12 @@ jobs:
       run: |
         COMMITTED_CODE=""
         while read file; do
-          COMMITTED_CODE+=$(cat $file)
+          COMMITTED_CODE+=$(cat $file | tr '\n' ' ')
         done < committed_files.txt
 
         RESPONSE=$(curl --location 'https://api.openai.com/v1/chat/completions' \
         --header 'Content-Type: application/json' \
         --header 'Authorization: Bearer ${{ secrets.OPENAI_API_KEY}}' \
-        --header 'Cookie: __cf_bm=ow34MZ9AMrRUW._02D9F1Viu.Qd.9vr5ptF7iqrBZcI-1700087802-0-Ab0bfgDmlg/j83Dru2DbxAqvTiKk1DXvULr29h0mxrmfiUqaMrCiL/M7mSMP+ij+0mFJz2u+3i8pdiwW5VWFl3U=; _cfuvid=2UvrTCaNQIHwprlOh6V_ElUuSF1Q8CSsBf_btQOcOsw-1700087802717-0-604800000' \
         --data '{
             "model": "gpt-3.5-turbo",
             "messages": [
