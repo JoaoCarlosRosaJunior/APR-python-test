@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-PREVIOUS_COMMIT=$(git rev-parse HEAD^1)
+PREVIOUS_COMMIT=$(git log --format="%H" -n 1 HEAD^)
 
 COMMITTED_CODE=""
 while read -r file; do
