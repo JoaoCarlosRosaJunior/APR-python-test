@@ -20,10 +20,23 @@ jobs:
           COMMITTED_CODE+=$(cat $file)
         done < committed_files.txt
 
-        RESPONSE=$(curl -X POST https://api.openai.com/v1/engines/davinci-codex/completions \
-        -H 'Content-Type: application/json' \
-        -H 'Authorization: Bearer ${{ secrets.OPENAI_API_KEY }}' \
-        -d '{"prompt": "'"$COMMITTED_CODE"'", "max_tokens": 60}')
+        RESPONSE=$(curl --location 'https://api.openai.com/v1/chat/completions' \
+        --header 'Content-Type: application/json' \
+        --header 'Authorization: Bearer ${{ secrets.OPENAI_API_KEY}}' \
+        --header 'Cookie: __cf_bm=ow34MZ9AMrRUW._02D9F1Viu.Qd.9vr5ptF7iqrBZcI-1700087802-0-Ab0bfgDmlg/j83Dru2DbxAqvTiKk1DXvULr29h0mxrmfiUqaMrCiL/M7mSMP+ij+0mFJz2u+3i8pdiwW5VWFl3U=; _cfuvid=2UvrTCaNQIHwprlOh6V_ElUuSF1Q8CSsBf_btQOcOsw-1700087802717-0-604800000' \
+        --data '{
+            "model": "gpt-3.5-turbo",
+            "messages": [
+              {
+                "role": "system",
+                "content": "The user is going to send a piece of code, if the code it'\''s bugged can you fix and return in this format: Bugs were found, here is the solution:\n {fixed code}? If it'\''s not bugged can you just send: No bugs were founded"
+              },
+              {
+                "role": "user",
+                "content": "'"$COMMITTED_CODE"'"
+              }
+            ]
+        }')
 
         echo $RESPONSE > response.txt
 
