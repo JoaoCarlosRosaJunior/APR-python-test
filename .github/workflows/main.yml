@@ -46,4 +46,26 @@ jobs:
 
     - name: Print OpenAI API response
       run: cat response.txt
+
+    - name: Send code to Hugging Face API
+      run: |
+        COMMITTED_CODE=""
+        for file in $(git diff --name-only HEAD HEAD~1 | grep '^src/'); do
+          COMMITTED_CODE+=$(git show HEAD:"$file" | tr '\n' ' ')
+        done
+        
+        echo "Committed Code:"
+        echo "$COMMITTED_CODE"
+
+        RESPONSE=$(curl --location 'https://api-inference.huggingface.co/models/JoaoJunior/T5_APR_java_python_v1' \
+        --header 'Content-Type: application/json' \
+        --header 'Authorization: Bearer ${{ secrets.HF_API_KEY}}' \
+        --data '{
+            "inputs": "'"${COMMITTED_CODE}"'"
+        }')
+
+        echo $RESPONSE > response_hf.txt
+ 
+    - name: Print Hugging Face API response
+      run: cat response_hf.txt
     
