@@ -1,4 +1,4 @@
-name: OpenAI API Call
+name: Bug checking and fixing
 on:
   push:
     branches: [ main, master ]
